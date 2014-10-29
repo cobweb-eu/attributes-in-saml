@@ -8,8 +8,9 @@
     -->
     
     <!-- 
-	entitlement of https://cobwebproject.eu/organizational to indicate the assertion comes from
-	an organizational IdP rather than one of the social gateways
+	entitlement of https://cobwebproject.eu/organizational indicates the assertion comes from
+	an organizational IdP. https://cobwebproject.eu/social comes from a social gateway.
+	Including explicit values for both cases makes it easier to write XACML
     -->
     <Attribute name="urn:mace:dir:attribute-def:eduPersonEntitlement" id="entitlement"/>
     <Attribute name="urn:oid:1.3.6.1.4.1.5923.1.1.1.7" id="entitlement"/>
