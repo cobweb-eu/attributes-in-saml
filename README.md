@@ -1,1 +1,1 @@
-A project to store configuration files for the SAML subsystem
+A project to store configuration files for the SAML components
