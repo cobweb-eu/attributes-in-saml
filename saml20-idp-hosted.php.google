@@ -7,7 +7,7 @@
  * This file has been modified for the COBWEB project's Google gateway.
  * Modifications include:
  * - changes due to the hostname
- * - adding SAML2 Artificat support
+ * - adding SAML2 Artifact support
  * - some static attributes to denote a social gateway
  * - calculation of the UUID attribute, and release as employeeNumber
  * - mapping of the attributes from Google to LDAP schema
