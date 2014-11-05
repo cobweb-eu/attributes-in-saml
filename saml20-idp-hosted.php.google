@@ -1,0 +1,86 @@
+<?php
+/**
+ * SAML 2.0 IdP configuration for simpleSAMLphp.
+ *
+ * See: https://rnd.feide.no/content/idp-hosted-metadata-reference
+ *
+ * This file has been modified for the COBWEB project's Google gateway.
+ * Modifications include:
+ * - changes due to the hostname
+ * - adding SAML2 Artificat support
+ * - some static attributes to denote a social gateway
+ * - calculation of the UUID attribute, and release as employeeNumber
+ * - mapping of the attributes from Google to LDAP schema
+ */
+
+$metadata['__DYNAMIC:1__'] = array(
+	/*
+	 * The hostname of the server (VHOST) that will use this SAML entity.
+	 *
+	 * Can be '__DEFAULT__', to use this entry by default.
+	 */
+	'host' => 'cobweb-gw.edina.ac.uk',
+
+	/* X.509 key and certificate. Relative to the cert directory. */
+	'privatekey' => 'server.pem',
+	'certificate' => 'server.crt',
+
+	/*
+	 * Authentication source to use. Must be one that is configured in
+	 * 'config/authsources.php'.
+	 */
+	'auth' => 'google',
+	
+	'saml20.sendartifact' => TRUE,
+	'https.certificate' => '/etc/pki/tls/certs/cobweb-gw.edina.ac.uk.crt.20140530',
+
+	/* Uncomment the following to use the uri NameFormat on attributes. */
+	
+	'attributes.NameFormat' => 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri',
+	'authproc' => array(
+
+                25 => array('class' => 'core:AttributeAdd', 'GEOSS:user' => 'social'),
+                26 => array('class' => 'core:AttributeAdd', 'eduPersonEntitlement' => 'https://cobwebproject.eu/social'),
+
+		/* create a uuid */
+                31 => array('class' => 'core:PHP',
+                        'code' => '
+                                $e = $attributes["http://axschema.org/contact/email"][0];
+				$h = hash("md5", $e);
+				$u = (string) $h;
+				$uuid =	substr($u, 0, 8) . "-" . 
+					substr($u, 8, 4) . "-" . 
+					substr($u, 12, 4) . "-" .
+					substr($u, 16, 4) . "-" .
+					substr($u, 20, 12);
+                                $attributes["employeeNumber"] = array($uuid);
+                        ',
+                ),
+
+		32 => array('class' => 'core:PHP',
+			'code' => '
+
+				$attributes["mail"] = $attributes["http://axschema.org/contact/email"];
+
+				$cn = $attributes["http://axschema.org/namePerson/first"][0] . " " .
+					$attributes["http://axschema.org/namePerson/last"][0];
+
+				$attributes["givenName"] = $attributes["http://axschema.org/namePerson/first"];
+				$attributes["sn"] = $attributes["http://axschema.org/namePerson/last"];
+				$attributes["cn"] = array($cn);
+				$attributes["displayName"] = array($cn);
+
+				unset($attributes["http://axschema.org/namePerson/last"]);
+				unset($attributes["http://axschema.org/namePerson/first"]);
+				unset($attributes["http://axschema.org/contact/email"]);
+			',
+		),
+
+		// Convert LDAP names to oids.
+		100 => array('class' => 'core:AttributeMap', 'name2oid'),
+	),
+	
+	'sign.logout' => TRUE,
+
+);
+
