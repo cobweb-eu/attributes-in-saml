@@ -1,0 +1,57 @@
+  <!--
+
+    AttributeDefinition of cobwebUserId.
+
+    Input: Requires uid attribute in myLDAP DataConnector
+
+    Output: Looks like a UUID, for example 3C4C1378-51E3-A19B-2511-972D8377B151
+            Encoded as urn:oid:2.16.840.1.113730.3.1.3 (or employeeNumber)
+
+  -->
+
+  <resolver:AttributeDefinition id="cobwebUserId" xsi:type="ad:Script" sourceAttributeID="uid">
+    <resolver:Dependency ref="myLDAP" />
+    <resolver:AttributeEncoder xsi:type="SAML2String" xmlns="urn:mace:shibboleth:2.0:attribute:encoder"
+                                name="urn:oid:2.16.840.1.113730.3.1.3" friendlyName="employeeNumber"/>
+    <ad:Script>
+      <![CDATA[
+
+        importPackage(Packages.edu.internet2.middleware.shibboleth.common.attribute.provider);
+        importPackage(Packages.org.apache.commons.codec.digest);
+
+        /* 
+         * Takes a hex string of 32 characters or longer, and formats it like a UUID
+         */
+        function hex2uuid(h32)
+        {
+                return h32.substring(0, 8) +
+                '-' +
+                h32.substring(8, 12) +
+                '-' +
+                h32.substring(12, 16) +
+                '-' +
+                h32.substring(16, 20) +
+                '-' +
+                h32.substring(20, 32);
+        }
+
+        // Create a hashable string from IdP's entityID and username
+        entityID = requestContext.getLocalEntityId();
+        user = uid.getValues().get(0);
+        hashable = entityID + '!' + user;
+
+        // Make a md5 hash of the identifier
+        unique = DigestUtils.md5Hex(hashable);
+        hexGuidValue = hex2uuid(unique);
+
+        // Export it into the new attribute
+        // Get attribute to add iff we have to
+
+        if (null == cobwebUserId) {
+            cobwebUserId = new BasicAttribute("cobwebUserId");
+        }
+        cobwebUserId.getValues().add(hexGuidValue);
+
+        ]]>
+      </ad:Script>
+  </resolver:AttributeDefinition>

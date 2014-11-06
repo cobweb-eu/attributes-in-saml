@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<afp:AttributeFilterPolicyGroup id="ShibbolethFilterPolicy"
+                                xmlns:afp="urn:mace:shibboleth:2.0:afp" xmlns:basic="urn:mace:shibboleth:2.0:afp:mf:basic" 
+                                xmlns:saml="urn:mace:shibboleth:2.0:afp:mf:saml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                                xsi:schemaLocation="urn:mace:shibboleth:2.0:afp classpath:/schema/shibboleth-2.0-afp.xsd
+                                                    urn:mace:shibboleth:2.0:afp:mf:basic classpath:/schema/shibboleth-2.0-afp-mf-basic.xsd
+                                                    urn:mace:shibboleth:2.0:afp:mf:saml classpath:/schema/shibboleth-2.0-afp-mf-saml.xsd">
+
+    <!--  Release the transient ID to anyone -->
+    <afp:AttributeFilterPolicy id="releaseTransientIdToAnyone">
+        <afp:PolicyRequirementRule xsi:type="basic:ANY"/>
+
+        <afp:AttributeRule attributeID="transientId">
+            <afp:PermitValueRule xsi:type="basic:ANY"/>
+        </afp:AttributeRule>
+    </afp:AttributeFilterPolicy>
+
+    <!-- Release attributes without personal data to everyone -->
+    <afp:AttributeFilterPolicy id="NonPersonal">
+        <afp:PolicyRequirementRule xsi:type="basic:ANY" />
+
+	<!-- Legacy attribute -->
+        <afp:AttributeRule attributeID="GeossUser">
+                <afp:PermitValueRule xsi:type="basic:ANY"/>
+        </afp:AttributeRule>
+
+	<afp:AttributeRule attributeID="cobwebUserId">
+		<afp:PermitValueRule xsi:type="basic:ANY" />
+	</afp:AttributeRule>
+
+	<afp:AttributeRule attributeID="eduPersonEntitlement">
+		<afp:PermitValueRule xsi:type="basic:ANY" />
+	</afp:AttributeRule>
+
+    </afp:AttributeFilterPolicy>
+
+    <!-- Release of attributes with personal data using a whitelist of SP -->
+    <!-- Note: this EDINA IdP releases personal data to EDINA SP, please review before copying file -->
+    <afp:AttributeFilterPolicy id="COBWEBpersonal">
+        <afp:PolicyRequirementRule xsi:type="basic:OR">
+            <basic:Rule xsi:type="basic:AttributeRequesterString" value="https://dyfi.cobwebproject.eu/shibboleth" />
+            <basic:Rule xsi:type="basic:AttributeRequesterString" value="https://cobweb.edina.ac.uk/shibboleth" />
+        </afp:PolicyRequirementRule>
+
+        <afp:AttributeRule attributeID="givenName">
+                <afp:PermitValueRule xsi:type="basic:ANY" />
+        </afp:AttributeRule>
+
+        <afp:AttributeRule attributeID="commonName">
+                <afp:PermitValueRule xsi:type="basic:ANY" />
+        </afp:AttributeRule>
+
+        <afp:AttributeRule attributeID="surname">
+                <afp:PermitValueRule xsi:type="basic:ANY" />
+        </afp:AttributeRule>
+
+        <afp:AttributeRule attributeID="displayName">
+                <afp:PermitValueRule xsi:type="basic:ANY" />
+        </afp:AttributeRule>
+
+	<afp:AttributeRule attributeID="email">
+		<afp:PermitValueRule xsi:type="basic:ANY" />
+	</afp:AttributeRule>
+    </afp:AttributeFilterPolicy>
+
+</afp:AttributeFilterPolicyGroup>
