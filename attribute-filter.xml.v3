@@ -1,0 +1,52 @@
+i<?xml version="1.0" encoding="UTF-8"?>
+<AttributeFilterPolicyGroup id="ShibbolethFilterPolicy"
+        xmlns="urn:mace:shibboleth:2.0:afp"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="urn:mace:shibboleth:2.0:afp http://shibboleth.net/schema/idp/shibboleth-afp.xsd">
+
+<!-- Release attributes without personal data to everyone -->
+   <AttributeFilterPolicy id="NonPersonal">
+        <PolicyRequirementRule xsi:type="ANY" />
+
+        <AttributeRule attributeID="GeossUser">
+                <PermitValueRule xsi:type="ANY"/>
+        </AttributeRule>
+
+        <AttributeRule attributeID="cobwebUserId">
+                <PermitValueRule xsi:type="ANY" />
+        </AttributeRule>
+
+        <AttributeRule attributeID="eduPersonEntitlement">
+                <PermitValueRule xsi:type="ANY" />
+        </AttributeRule>
+
+    </AttributeFilterPolicy>
+
+    <AttributeFilterPolicy id="COBWEBpersonal">
+        <PolicyRequirementRule xsi:type="OR">
+            <Rule xsi:type="Requester" value="https://dyfi.cobwebproject.eu/shibboleth" />
+            <Rule xsi:type="Requester" value="https://cobweb.edina.ac.uk/shibboleth" />
+        </PolicyRequirementRule>
+
+        <AttributeRule attributeID="givenName">
+                <PermitValueRule xsi:type="ANY" />
+        </AttributeRule>
+
+        <AttributeRule attributeID="commonName">
+                <PermitValueRule xsi:type="ANY" />
+        </AttributeRule>
+
+        <AttributeRule attributeID="surname">
+                <PermitValueRule xsi:type="ANY" />
+        </AttributeRule>
+
+        <AttributeRule attributeID="displayName">
+                <PermitValueRule xsi:type="ANY" />
+        </AttributeRule>
+
+        <AttributeRule attributeID="email">
+                <PermitValueRule xsi:type="ANY" />
+        </AttributeRule>
+    </AttributeFilterPolicy>
+
+</AttributeFilterPolicyGroup>
